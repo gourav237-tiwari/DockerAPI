@@ -16,7 +16,7 @@ pipeline {
     stage('Docker Build') {
     	agent any
       steps {
-      	sh 'docker build -t DockerWebAPI:latest .'
+      	sh 'docker build -t DockerAPI:latest .'
       }
     }
   }
