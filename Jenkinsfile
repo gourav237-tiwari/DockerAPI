@@ -1,31 +1,23 @@
+#!groovy
+
 pipeline {
-agent any
-stages {
-stage('Cloning our Git') {
-steps {
-git 'https://github.com/gourav237-tiwari/DockerAPI.git'
-}
-}
-stage('Building our image') {
-steps{
-script {
-dockerImage = docker.build registry + ":$BUILD_NUMBER"
-}
-}
-}
-stage('Deploy our image') {
-steps{
-script {
-docker.withRegistry( '', registryCredential ) {
-dockerImage.push()
-}
-}
-}
-}
-stage('Cleaning up') {
-steps{
-sh "docker rmi $registry:$BUILD_NUMBER"
-}
-}
-}
+	agent none
+  stages {
+  	stage('Maven Install') {
+    	agent {
+      	docker {
+        	image 'maven:3.5.0'
+        }
+      }
+      steps {
+      	sh 'mvn clean install'
+      }
+    }
+    stage('Docker Build') {
+    	agent any
+      steps {
+      	sh 'docker build -t DockerAPI/DockerWebAPI:latest .'
+      }
+    }
+  }
 }
