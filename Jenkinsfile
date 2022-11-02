@@ -1,27 +1,15 @@
-node {
-    def app
+pipeline {
+    agent any
+    stages {
+        stage('Build image') {
+            steps {
+                echo 'Starting to build docker image'
 
-    stage('Clone repository') {
-        /* Let's make sure we have the repository cloned to our workspace */
-
-        checkout scm
-    }
-
-    stage('Build image') {
-        /* This builds the actual image; synonymous to
-         * docker build on the command line */
-
-        app = docker.build("dockerwebapi")
-    }
-
-    stage('Test image') {
-        /* Ideally, we would run a test framework against our image.
-         * For this example, we're using a Volkswagen-type approach ;-) */
-
-        app.inside {
-            sh 'echo "Tests passed"'
+                script {
+                    def customImage = docker.build("dockerwebapi:${env.BUILD_ID}")
+                    customImage.push()
+                }
+            }
         }
     }
-
-    
 }
